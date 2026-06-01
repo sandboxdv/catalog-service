@@ -33,17 +33,6 @@ class CatalogServiceApplicationTests {
     // Customer and employee
     private static KeycloakToken isabelleTokens;
 
-    @BeforeAll
-    static void generateAccessTokens() {
-        WebClient webClient = WebClient.builder()
-                .baseUrl(keycloakContainer.getAuthServerUrl() + "/realms/PolarBookshop/protocol/openid-connect/token")
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                .build();
-
-        isabelleTokens = authenticateWith("isabelle", "password", webClient);
-        bjornTokens = authenticateWith("bjorn", "password", webClient);
-    }
-
     @Autowired
     private WebTestClient webTestClient;
 
@@ -55,6 +44,17 @@ class CatalogServiceApplicationTests {
     static void dynamicProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.security.oauth2.resourceserver.jwt.issuer-uri",
                 () -> keycloakContainer.getAuthServerUrl() + "/realms/PolarBookshop");
+    }
+
+    @BeforeAll
+    static void generateAccessTokens() {
+        WebClient webClient = WebClient.builder()
+                .baseUrl(keycloakContainer.getAuthServerUrl() + "/realms/PolarBookshop/protocol/openid-connect/token")
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                .build();
+
+        isabelleTokens = authenticateWith("isabelle", "password", webClient);
+        bjornTokens = authenticateWith("bjorn", "password", webClient);
     }
 
     @Test
@@ -138,7 +138,8 @@ class CatalogServiceApplicationTests {
                 .expectBody(Book.class).value(book -> assertThat(book).isNotNull())
                 .returnResult().getResponseBody();
         var bookToUpdate = new Book(createdBook.id(), createdBook.isbn(), createdBook.title(), createdBook.author(), 7.95,
-                createdBook.publisher(), createdBook.createdDate(), createdBook.lastModifiedDate(), createdBook.version());
+                createdBook.publisher(), createdBook.createdDate(), createdBook.lastModifiedDate(),
+                createdBook.createdBy(), createdBook.lastModifiedBy(), createdBook.version());
 
         webTestClient
                 .put()
