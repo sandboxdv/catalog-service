@@ -33,6 +33,11 @@ spring:
     hikari:
       connection-timeout: 2000
       maximum-pool-size: 5
+  jackson:
+    deserialization:
+      # WARNING: Converts JSON nulls into primitive defaults (0/false) instead of failing.
+      # Hides invalid client input and may mask API contract issues.
+      fail-on-null-for-primitives: false
   security:
     oauth2:
       resourceserver:
