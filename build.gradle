@@ -56,6 +56,10 @@ dependencyManagement {
 	}
 }
 
+springBoot {
+	buildInfo()
+}
+
 bootRun {
 	environment 'SPRING_PROFILES_ACTIVE', 'testdata'
 }
